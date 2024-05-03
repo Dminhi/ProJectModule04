@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-
 public interface IUserRepository extends JpaRepository<User,Long> {
     Optional<User> findByUsername(String username);
     @Modifying
@@ -22,4 +21,5 @@ public interface IUserRepository extends JpaRepository<User,Long> {
     void changeStatus(@Param("id") Long id);
     List<User> findAllByUsernameContains(String search);
 
+    boolean existsByPhone(String phone);
 }

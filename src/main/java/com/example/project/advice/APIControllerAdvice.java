@@ -1,6 +1,8 @@
 package com.example.project.advice;
 
+import com.example.project.exception.AccountLockedException;
 import com.example.project.exception.NotFoundException;
+import com.example.project.exception.RequestErrorException;
 import com.example.project.model.dto.response.ResponseError;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -39,6 +41,22 @@ public class APIControllerAdvice {
             detailErr.put(err.getField(),err.getDefaultMessage());
         });
         map.put("error", new ResponseError(400,"BAD_REQUEST",detailErr));
+        return map;
+    }
+
+    @ExceptionHandler(AccountLockedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String,Object> handelAccountLockedException(AccountLockedException e){
+        Map<String,Object> map = new HashMap<>();
+        map.put("error", new ResponseError(403,"FOR_BIDDEN",e.getMessage()));
+        return map;
+    }
+
+    @ExceptionHandler(RequestErrorException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String,Object> handelRequestErrorException(RequestErrorException e){
+        Map<String,Object> map = new HashMap<>();
+        map.put("error", new ResponseError(400,"BAD_REQUEST",e.getMessage()));
         return map;
     }
 }

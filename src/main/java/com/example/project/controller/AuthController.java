@@ -1,6 +1,8 @@
 package com.example.project.controller;
-import com.example.project.model.dto.request.FormLogin;
-import com.example.project.model.dto.request.FormRegister;
+import com.example.project.exception.AccountLockedException;
+import com.example.project.exception.NotFoundException;
+import com.example.project.model.dto.request.auth.FormLogin;
+import com.example.project.model.dto.request.auth.FormRegister;
 import com.example.project.model.dto.response.JWTResponse;
 import com.example.project.service.user.IUserService;
 import jakarta.validation.Valid;
@@ -18,7 +20,7 @@ public class AuthController {
     @Autowired
     private IUserService userService;
     @PostMapping("/sign-in")
-    public ResponseEntity<JWTResponse> doLogin(@RequestBody FormLogin formLogin){
+    public ResponseEntity<JWTResponse> doLogin(@Valid @RequestBody FormLogin formLogin) throws AccountLockedException, NotFoundException {
         return new ResponseEntity<>(userService.login(formLogin), HttpStatus.OK);
     }
     @PostMapping("/sign-up")

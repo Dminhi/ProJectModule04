@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
@@ -18,7 +15,8 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 public class Product {
@@ -34,9 +32,9 @@ public class Product {
     private boolean status;
     @Column(columnDefinition = "TEXT")
     private String description;
-    @Column(precision = 10, scale = 2, nullable = false) // Định dạng cột DECIMAL(10,2) và không cho phép giá trị null
-    private BigDecimal unitPrice;
-    @Column(nullable = false) // Không cho phép giá trị null
+    @Column(nullable = false)
+    private Double unitPrice;
+    @Column(nullable = false)
     @Min(value = 0, message = "Giá trị phải lớn hơn hoặc bằng 0.")
     private Integer stockQuantity;
     private String image;

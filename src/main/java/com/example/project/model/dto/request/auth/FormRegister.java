@@ -1,4 +1,4 @@
-package com.example.project.model.dto.request;
+package com.example.project.model.dto.request.auth;
 
 import com.example.project.model.entity.User;
 import com.example.project.validator.NameExist;
@@ -21,16 +21,18 @@ import java.util.Set;
 @Setter
 @Getter
 public class FormRegister {
-    @Size(min = 6, max = 100, message = "Độ dài phải từ 6 đến 100 ký tự.")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Không cho phép ký tự đặc biệt.")
+    @Size(min = 6, max = 100, message = "The length must be between 6 and 100 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "Special characters are not allowed")
     @NameExist(entityClass = User.class,existName = "username")
     private String username;
-    @NotEmpty(message = "Thuộc tính không được để trống.")
-    @Size(max = 100, message = "Độ dài tối đa là 100 ký tự.")
+    @NotEmpty(message = "Full Name not empty")
+    @Size(max = 100, message = "The maximum length is 100 characters")
     private String fullName;
-    @Email(message = "Email không hợp lệ.")
+    @NotEmpty(message = "Email not empty")
+    @Email(message = "The email is invalid.")
     @NameExist(entityClass = User.class,existName = "email")
     private String email;
+    @NotEmpty(message = "Password not empty")
     private String password;
     private Set<String> roles;
 }

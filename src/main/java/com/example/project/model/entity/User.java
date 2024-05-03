@@ -49,10 +49,10 @@ public class User {
     private Date updatedAt;
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Orders> orders;
+    private List<ShoppingCart> shoppingCarts;
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ShoppingCart> shoppingCarts;
+    private List<Orders> orders;
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<WishList> wishLists;

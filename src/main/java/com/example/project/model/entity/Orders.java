@@ -3,19 +3,16 @@ package com.example.project.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 public class Orders {
@@ -23,12 +20,12 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String serialNumber;
-    private BigDecimal totalPrice;
-    private OderStatusName oderStatusName;
+    private Double totalPrice;
+    private OrderStatus oderStatus;
     private String note;
     private String receiveName;
     private String receiveAddress;
-    @Column(length = 15, unique = true, nullable = false)
+    @Column(length = 15, nullable = false)
     private String receivePhone;
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Column(nullable = false)

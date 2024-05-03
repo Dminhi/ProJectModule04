@@ -35,4 +35,5 @@ public interface IProductRepository extends JpaRepository<Product,Long> {
     @Query(value = "update Product set status = false where id = :id",nativeQuery = true)
     void setDeleteStatus(@Param("id") Long id);
 
+    boolean existsByProductName(String name);
 }

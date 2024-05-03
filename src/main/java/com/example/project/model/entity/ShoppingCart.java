@@ -2,21 +2,18 @@ package com.example.project.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Entity
+@Getter
+@Setter
 @Builder
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Min(value = 0, message = "Giá trị phải lớn hơn hoặc bằng 0.")
     private int orderQuantity;
     @ManyToOne
     @JoinColumn(name = "userId")

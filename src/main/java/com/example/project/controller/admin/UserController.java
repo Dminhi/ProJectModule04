@@ -1,8 +1,8 @@
-package com.example.project.controller;
+package com.example.project.controller.admin;
 
-import com.example.project.model.entity.Product;
+import com.example.project.exception.NotFoundException;
+import com.example.project.exception.RequestErrorException;
 import com.example.project.model.entity.User;
-import com.example.project.service.product.IProductService;
 import com.example.project.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,9 +28,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> changeStatus(@PathVariable Long id){
-        userService.changeStatus(id);
-        return new ResponseEntity<>("Status Changed",HttpStatus.OK);
+    public ResponseEntity<User> changeStatus(@PathVariable Long id) throws NotFoundException, RequestErrorException {
+        User user = userService.changeStatus(id);
+        return new ResponseEntity<>(user,HttpStatus.OK);
     }
 
     @GetMapping("/search")
