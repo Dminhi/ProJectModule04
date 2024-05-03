@@ -1,4 +1,4 @@
-package com.example.project.model.dto.request;
+package com.example.project.model.dto.request.product;
 
 import com.example.project.model.entity.Product;
 import com.example.project.validator.NameExist;
@@ -16,7 +16,7 @@ public class ProductRequest {
     @NameExist(entityClass = Product.class,existName = "productName")
     private String productName;
     private String description;
-    private BigDecimal unitPrice;
+    private Double unitPrice;
     private Integer stockQuantity;
     private Long categoryId;
 }

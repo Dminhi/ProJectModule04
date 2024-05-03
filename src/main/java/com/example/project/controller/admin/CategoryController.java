@@ -1,12 +1,10 @@
-package com.example.project.controller;
+package com.example.project.controller.admin;
 
 import com.example.project.exception.NotFoundException;
-import com.example.project.model.dto.request.CategoryEditRequest;
-import com.example.project.model.dto.request.CategoryRequest;
-import com.example.project.model.dto.request.ProductEditRequest;
-import com.example.project.model.dto.request.ProductRequest;
+import com.example.project.exception.RequestErrorException;
+import com.example.project.model.dto.request.category.CategoryEditRequest;
+import com.example.project.model.dto.request.category.CategoryRequest;
 import com.example.project.model.entity.Category;
-import com.example.project.model.entity.Product;
 import com.example.project.service.category.ICategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +40,9 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id,@RequestBody CategoryEditRequest categoryEditRequest) throws NotFoundException {
-        categoryService.update(categoryEditRequest, id);
-        return new ResponseEntity<>("Update Successful",HttpStatus.OK);
+    public ResponseEntity<Category> update(@PathVariable Long id,@RequestBody CategoryEditRequest categoryEditRequest) throws NotFoundException, RequestErrorException {
+        Category category = categoryService.update(categoryEditRequest, id);
+        return new ResponseEntity<>(category,HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> changeCategoryStatus(@PathVariable Long id) throws NotFoundException {

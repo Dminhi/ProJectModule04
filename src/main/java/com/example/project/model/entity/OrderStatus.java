@@ -1,6 +1,6 @@
 package com.example.project.model.entity;
 
-public enum OderStatusName {
+public enum OrderStatus {
     WAITING,
     CONFIRM,
     DELIVERY,
