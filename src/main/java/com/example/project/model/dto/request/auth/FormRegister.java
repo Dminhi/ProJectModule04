@@ -30,7 +30,7 @@ public class FormRegister {
     private String fullName;
     @NotEmpty(message = "Email not empty")
     @Email(message = "The email is invalid.")
-    @NameExist(entityClass = User.class,existName = "email")
+    @NameExist(entityClass = User.class,existName = "email",message = "email is exist")
     private String email;
     @NotEmpty(message = "Password not empty")
     private String password;

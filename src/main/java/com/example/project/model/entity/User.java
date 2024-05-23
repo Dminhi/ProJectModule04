@@ -38,22 +38,11 @@ public class User {
     private String avatar;
     @Column(length = 15, unique = true) // Đảm bảo số điện thoại không trùng lặp, kiểu VARCHAR(15)
     private String phone;
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Address> addresses;
     @Column(columnDefinition = "TINYINT DEFAULT 1") // Giá trị mặc định là 1 (bị xóa)
     private byte is_delete=1;
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date createdAt;
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date updatedAt;
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ShoppingCart> shoppingCarts;
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Orders> orders;
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<WishList> wishLists;
+
 }

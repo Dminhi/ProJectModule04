@@ -1,6 +1,5 @@
 package com.example.project.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -8,10 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +18,7 @@ import java.util.UUID;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long productId;
     @Column(length = 100, unique = true, nullable = false)
     private String sku;
     @Column(length = 100, unique = true, nullable = false)
@@ -45,7 +41,4 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category category;
-    @JsonIgnore
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<ShoppingCart> shoppingCarts;
 }

@@ -1,5 +1,6 @@
 package com.example.project.repository;
 
+import com.example.project.model.dto.response.ProductResponse;
 import com.example.project.model.entity.Product;
 import com.example.project.model.entity.User;
 import jakarta.transaction.Transactional;
@@ -25,15 +26,14 @@ public interface IProductRepository extends JpaRepository<Product,Long> {
     @Query(value = "select * from Product p where p.status = true order by createdAt desc limit :top",nativeQuery = true)
     List<Product> findNewProductAndStatusIsTrue(@Param("top") int top );
 
-    List<Product> findAllByCategoryIdAndStatusIsTrue(Long categoryId);
+    List<Product> findAllByCategoryIdAndStatusIsTrue(Long categoryId,Pageable pageable);
 
     Page<Product> findAllByStatusIsTrue(Pageable pageable);
 
-    Optional<Product> findByIdAndStatusIsTrue(Long id);
     @Modifying
     @Transactional
-    @Query(value = "update Product set status = false where id = :id",nativeQuery = true)
-    void setDeleteStatus(@Param("id") Long id);
+    @Query(value = "update Product p set status = !p.status where productId = :id",nativeQuery = true)
+    void changeProductStatus(@Param("id") Long id);
 
     boolean existsByProductName(String name);
 }

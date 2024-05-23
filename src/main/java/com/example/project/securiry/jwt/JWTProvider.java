@@ -10,7 +10,7 @@ import java.util.Date;
 @Component
 @Slf4j
 public class JWTProvider {
-    @Value("${jwt.expired-time}")
+    @Value("${jwt.expired-time}0")
     private long expired;
     @Value("${jwt.secret-key}")
     private String secretKey;

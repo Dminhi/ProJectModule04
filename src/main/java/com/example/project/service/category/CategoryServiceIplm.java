@@ -1,9 +1,11 @@
 package com.example.project.service.category;
 
+import com.example.project.exception.DataNotFound;
 import com.example.project.exception.NotFoundException;
 import com.example.project.exception.RequestErrorException;
 import com.example.project.model.dto.request.category.CategoryEditRequest;
 import com.example.project.model.dto.request.category.CategoryRequest;
+import com.example.project.model.dto.response.CategoryResponse;
 import com.example.project.model.entity.Category;
 import com.example.project.repository.ICategoryRepository;
 import jakarta.transaction.Transactional;
@@ -25,17 +27,18 @@ public class CategoryServiceIplm implements ICategoryService{
     }
 
     @Override
-    public Category findById(Long id) throws NotFoundException {
-        return categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("category not found"));
+    public Category findById(Long id) throws NotFoundException, DataNotFound {
+        return categoryRepository.findById(id).orElseThrow(() -> new DataNotFound("category not found"));
     }
 
     @Override
-    public Category save(CategoryRequest category) {
-        return categoryRepository.save(Category.builder()
-                        .categoryName(category.getCategoryName())
-                        .description(category.getDescription())
-                        .status(true)
-                .build());
+    public CategoryResponse save(CategoryRequest category) {
+        Category categories = new Category();
+        categories.setCategoryName(category.getCategoryName());
+        categories.setDescription(category.getDescription());
+        categories.setStatus(true);
+        Category newCategory = categoryRepository.save(categories);
+        return toCategoryResponse(newCategory);
     }
 
     @Override
@@ -55,12 +58,29 @@ public class CategoryServiceIplm implements ICategoryService{
     }
 
     @Override
-    public void setDelete(Long id) throws NotFoundException {
-        categoryRepository.setDeleteStatus(id);
+    public Category changeCategoryStatus(Long id) throws NotFoundException, DataNotFound {
+
+        categoryRepository.changeCategoryStatus(id);
+        return categoryRepository.findById(id).orElseThrow(()->new DataNotFound("category not found"));
     }
 
     @Override
-    public List<Category> findAllByCategoryTrue() {
-        return categoryRepository.findAllByStatusIsTrue();
+    public List<CategoryResponse> findAllByCategoryTrue() {
+        return   categoryRepository.findAllByStatusIsTrue().stream().map(CategoryServiceIplm::toCategoryResponse).toList();
+
+    }
+
+    public static CategoryResponse toCategoryResponse(Category category) {
+        if (category == null) {
+            return null; // Nếu category là null, trả về null để tránh lỗi
+        }
+
+        // Sử dụng Builder của CategoryResponse để tạo một đối tượng mới
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .categoryName(category.getCategoryName())
+                .description(category.getDescription())
+                .build();
     }
 }
+

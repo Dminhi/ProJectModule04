@@ -26,7 +26,4 @@ public class Category {
     private String description;
     @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean status;
-    @JsonIgnore
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private List<Product> products;
 }

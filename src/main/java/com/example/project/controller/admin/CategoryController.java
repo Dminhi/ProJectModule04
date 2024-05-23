@@ -1,9 +1,14 @@
 package com.example.project.controller.admin;
 
+import com.example.project.config.ConvertPageToPaginationDTO;
+import com.example.project.exception.DataNotFound;
 import com.example.project.exception.NotFoundException;
 import com.example.project.exception.RequestErrorException;
 import com.example.project.model.dto.request.category.CategoryEditRequest;
 import com.example.project.model.dto.request.category.CategoryRequest;
+import com.example.project.model.dto.response.CategoryResponse;
+import com.example.project.model.dto.responsewapper.EHttpStatus;
+import com.example.project.model.dto.responsewapper.ResponseWapper;
 import com.example.project.model.entity.Category;
 import com.example.project.service.category.ICategoryService;
 import jakarta.validation.Valid;
@@ -22,31 +27,49 @@ public class CategoryController {
     @Autowired
     ICategoryService categoryService;
     @GetMapping()
-    public ResponseEntity<Page<Category>> findAll(@PageableDefault(page = 0, size = 5, sort = "categoryName", direction = Sort.Direction.ASC) Pageable pageable) {
+    public ResponseEntity<?> findAll(@PageableDefault(page = 0, size = 5, sort = "categoryName", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<Category> categories = categoryService.findAll(pageable);
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                ConvertPageToPaginationDTO.convertPageToPaginationDTO(categories)), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> findCategoryById(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<?> findCategoryById(@PathVariable Long id) throws NotFoundException, DataNotFound {
         Category category = categoryService.findById(id);
-        return new ResponseEntity<>(category, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                category), HttpStatus.OK);
     }
 
     @PostMapping()
-    public ResponseEntity<Category> create(@Valid @RequestBody CategoryRequest category){
-        Category c = categoryService.save(category);
-        return new ResponseEntity<>(c,HttpStatus.CREATED);
+    public ResponseEntity<?> create(@Valid @RequestBody CategoryRequest category){
+        CategoryResponse c = categoryService.save(category);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.CREATED.name(),
+                HttpStatus.CREATED.value(),
+                c), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> update(@PathVariable Long id,@RequestBody CategoryEditRequest categoryEditRequest) throws NotFoundException, RequestErrorException {
+    public ResponseEntity<?> update(@PathVariable Long id,@Valid @RequestBody CategoryEditRequest categoryEditRequest) throws NotFoundException, RequestErrorException {
         Category category = categoryService.update(categoryEditRequest, id);
-        return new ResponseEntity<>(category,HttpStatus.OK);
-    }
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                category), HttpStatus.OK);    }
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> changeCategoryStatus(@PathVariable Long id) throws NotFoundException {
-        categoryService.setDelete(id);
-        return new ResponseEntity<>("Delete Successful",HttpStatus.OK);
-    }
+    public ResponseEntity<?> changeCategoryStatus(@PathVariable Long id) throws NotFoundException, DataNotFound {
+        Category category = categoryService.changeCategoryStatus(id);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                category), HttpStatus.OK);}
 }

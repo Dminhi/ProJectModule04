@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class ShoppingCartResponse {
+    private long id;
     private int orderQuantity;
     private String productName;
     private Double productPrice;

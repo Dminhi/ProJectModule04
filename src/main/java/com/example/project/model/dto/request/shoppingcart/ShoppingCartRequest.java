@@ -14,8 +14,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ShoppingCartRequest {
-    @Min(value = 0, message = "Giá trị phải lớn hơn hoặc bằng 0.")
+    @Min(value = 1, message = "orderQuantity must be more than  0.")
+    @NotNull(message = "orderQuantity not be null")
     private int orderQuantity;
-    @NotNull
+    @NotNull(message = "productId not be null")
     private Long productId;
 }

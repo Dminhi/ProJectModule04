@@ -16,10 +16,12 @@ public class OrderDetail {
     @EmbeddedId
     private CompositeKey id;
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "orders_id")
+    @MapsId("orderId")
     private Orders orders;
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @MapsId("productId")
     private Product product;
     private String name;
     @Column(nullable = false)

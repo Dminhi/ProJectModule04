@@ -1,7 +1,12 @@
 package com.example.project.controller;
 
+import com.example.project.config.ConvertPageToPaginationDTO;
+import com.example.project.exception.DataNotFound;
 import com.example.project.exception.NotFoundException;
+import com.example.project.model.dto.response.CategoryResponse;
 import com.example.project.model.dto.response.ProductResponse;
+import com.example.project.model.dto.responsewapper.EHttpStatus;
+import com.example.project.model.dto.responsewapper.ResponseWapper;
 import com.example.project.model.entity.Category;
 import com.example.project.model.entity.Product;
 import com.example.project.service.category.ICategoryService;
@@ -26,39 +31,60 @@ public class HomeController {
     @Autowired
     private ICategoryService categoryService;
     @GetMapping("/products/search")
-    public ResponseEntity<List<ProductResponse>> findByNameOrDescription(@RequestParam(required = false) String search) {
+    public ResponseEntity<?> findByNameOrDescription(@RequestParam(required = false) String search) throws DataNotFound {
         List<ProductResponse> productResponses = productService.findProductsByNameOrDescription(search);
-        return new ResponseEntity<>(productResponses, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                productResponses ), HttpStatus.OK);
     }
 
 
     @GetMapping("/products")
     public ResponseEntity<?> findAll(@PageableDefault(page = 0, size = 5, sort = "productName", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<ProductResponse> productResponses = productService.findAllByStatusIsTrue(pageable);
-        return new ResponseEntity<>(productResponses.getContent(), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                ConvertPageToPaginationDTO.convertPageToPaginationDTO(productResponses)), HttpStatus.OK);
     }
-
     @GetMapping("/products/new-products")
     public ResponseEntity<?> findNewProductAndStatusIsTrue(@RequestParam int top) {
         List<ProductResponse> productResponses = productService.findNewProductAndStatusIsTrue(top);
-        return new ResponseEntity<>(productResponses, HttpStatus.OK);
-    }
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                productResponses ), HttpStatus.OK);    }
 
     @GetMapping("/products/categories/{categoryId}")
-    public ResponseEntity<?> findProductByCategory(@PathVariable Long categoryId) {
-        List<ProductResponse> productResponses = productService.findAllByCategoryIdAndStatusIsTrue(categoryId);
-        return new ResponseEntity<>(productResponses, HttpStatus.OK);
+    public ResponseEntity<?> findProductByCategory(@PathVariable Long categoryId,@PageableDefault(page = 0, size = 5, sort = "productName", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<ProductResponse> productResponses = productService.findAllByCategoryIdAndStatusIsTrue(categoryId,pageable);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                ConvertPageToPaginationDTO.convertPageToPaginationDTO(productResponses)), HttpStatus.OK);
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<?> findProductById(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<?> findProductById(@PathVariable Long id) throws NotFoundException, DataNotFound {
         ProductResponse productResponse = productService.findByIdAndStatusIsTrue(id);
-        return new ResponseEntity<>(productResponse, HttpStatus.OK);
-    }
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                productResponse), HttpStatus.OK);    }
 
     @GetMapping("/categories")
-    public ResponseEntity<List<Category>> findCategoryByStatusTrue() {
-        List<Category> categories = categoryService.findAllByCategoryTrue();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+    public ResponseEntity<?> findCategoryByStatusTrue() {
+        List<CategoryResponse> categories = categoryService.findAllByCategoryTrue();
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                categories), HttpStatus.OK);
     }
 }

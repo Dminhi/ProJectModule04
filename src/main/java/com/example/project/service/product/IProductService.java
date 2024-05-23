@@ -1,5 +1,6 @@
 package com.example.project.service.product;
 
+import com.example.project.exception.DataNotFound;
 import com.example.project.exception.NotFoundException;
 import com.example.project.exception.RequestErrorException;
 import com.example.project.model.dto.request.product.ProductEditRequest;
@@ -12,24 +13,28 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface IProductService {
-    List<ProductResponse> findProductsByNameOrDescription(String findProduct);
+    List<ProductResponse> findProductsByNameOrDescription(String findProduct) throws DataNotFound;
     Page<Product> findAll(Pageable pageable);
 
     List<ProductResponse> findNewProductAndStatusIsTrue(int top);
 
 
-    ProductResponse findByIdAndStatusIsTrue(Long id) throws NotFoundException;
+    ProductResponse findByIdAndStatusIsTrue(Long id) throws NotFoundException, DataNotFound;
 
     Page<ProductResponse> findAllByStatusIsTrue(Pageable pageable);
 
-    ProductResponse findById(Long id) throws NotFoundException;
+    Product findById(Long id) throws NotFoundException, DataNotFound;
 
     Product save(ProductRequest productRequest) throws NotFoundException;
 
-    List<ProductResponse> findAllByCategoryIdAndStatusIsTrue(Long id);
+    Page<ProductResponse> findAllByCategoryIdAndStatusIsTrue(Long id, Pageable pageable);
 
-    ProductResponse update(ProductEditRequest productEditRequest, Long id) throws NotFoundException, RequestErrorException;
+    Product update(ProductEditRequest productEditRequest, Long id) throws NotFoundException, RequestErrorException;
 
-    void setDelete(Long id) throws NotFoundException;
+    Product changeProductStatus(Long id) throws NotFoundException, DataNotFound;
+
+    List<ProductResponse> findAllProductByShoppingCartUser() throws NotFoundException, DataNotFound;
+
+
 
 }

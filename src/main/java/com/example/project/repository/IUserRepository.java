@@ -1,8 +1,11 @@
 package com.example.project.repository;
 
 import com.example.project.model.entity.Product;
+import com.example.project.model.entity.RoleName;
 import com.example.project.model.entity.User;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +17,9 @@ import java.util.Optional;
 
 @Repository
 public interface IUserRepository extends JpaRepository<User,Long> {
+    @Query(value = "select u.* from User u join user_role ul on u.id = ul.userId join Role r on ul.roleId = r.id where r.roleName = 'ROLE_USER'",nativeQuery = true)
+    List<User> findAllByRoleUser(Pageable pageable);
+
     Optional<User> findByUsername(String username);
     @Modifying
     @Transactional
@@ -22,4 +28,5 @@ public interface IUserRepository extends JpaRepository<User,Long> {
     List<User> findAllByUsernameContains(String search);
 
     boolean existsByPhone(String phone);
+
 }

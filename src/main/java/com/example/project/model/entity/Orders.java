@@ -1,13 +1,12 @@
 package com.example.project.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,9 +17,10 @@ import java.util.List;
 public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long orderId;
     private String serialNumber;
     private Double totalPrice;
+    @Enumerated(EnumType.STRING)
     private OrderStatus oderStatus;
     private String note;
     private String receiveName;
@@ -35,8 +35,6 @@ public class Orders {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "userId")
+    @JsonIgnoreProperties({"password"})
     private User user;
-    @JsonIgnore
-    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
-    private List<OrderDetail> orderDetailList;
 }

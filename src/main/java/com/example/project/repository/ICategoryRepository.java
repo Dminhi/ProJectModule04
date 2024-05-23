@@ -14,10 +14,11 @@ import java.util.List;
 public interface ICategoryRepository extends JpaRepository<Category,Long> {
     @Modifying
     @Transactional
-    @Query(value = "update Category set status = false where id = :id",nativeQuery = true)
-    void setDeleteStatus(@Param("id") Long id);
+    @Query(value = "update Category c set status = !c.status where id = :id",nativeQuery = true)
+    void changeCategoryStatus(@Param("id") Long id);
 
     List<Category> findAllByStatusIsTrue();
 
     boolean existsByCategoryName(String name);
+
 }

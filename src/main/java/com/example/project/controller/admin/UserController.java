@@ -1,7 +1,12 @@
 package com.example.project.controller.admin;
 
+import com.example.project.config.ConvertPageToPaginationDTO;
+import com.example.project.exception.DataNotFound;
 import com.example.project.exception.NotFoundException;
 import com.example.project.exception.RequestErrorException;
+import com.example.project.model.dto.response.UserResponse;
+import com.example.project.model.dto.responsewapper.EHttpStatus;
+import com.example.project.model.dto.responsewapper.ResponseWapper;
 import com.example.project.model.entity.User;
 import com.example.project.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,21 +27,32 @@ public class UserController {
     IUserService userService;
 
     @GetMapping()
-    public ResponseEntity<Page<User>> findAll(@PageableDefault(page = 0, size = 5, sort = "username", direction = Sort.Direction.ASC) Pageable pageable) {
+    public ResponseEntity<?> findAll(@PageableDefault(page = 0, size = 5, sort = "username", direction = Sort.Direction.ASC) Pageable pageable) throws NotFoundException {
         Page<User> users = userService.findAll(pageable);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                ConvertPageToPaginationDTO.convertPageToPaginationDTO(users)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> changeStatus(@PathVariable Long id) throws NotFoundException, RequestErrorException {
+    public ResponseEntity<?> changeStatus(@PathVariable Long id) throws NotFoundException, RequestErrorException {
         User user = userService.changeStatus(id);
-        return new ResponseEntity<>(user,HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                user), HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<User>> findUserByUsername(@RequestParam(required = false) String search) {
-        List<User> users = userService.findUserByUsername(search);
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
+    public ResponseEntity<?> findUserByUsername(@RequestParam(required = false) String search) throws DataNotFound {
+        List<UserResponse> users = userService.findUserByUsername(search);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                users), HttpStatus.OK);    }
 
 }

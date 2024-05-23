@@ -1,5 +1,7 @@
 package com.example.project.controller.admin;
 
+import com.example.project.model.dto.responsewapper.EHttpStatus;
+import com.example.project.model.dto.responsewapper.ResponseWapper;
 import com.example.project.model.entity.Role;
 import com.example.project.service.role.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,12 @@ public class RoleController {
     @Autowired
     IRoleService roleService;
     @GetMapping()
-    public ResponseEntity<List<Role>> findAll() {
+    public ResponseEntity<?> findAll() {
         List<Role> roles = roleService.findAll();
-        return new ResponseEntity<>(roles, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                roles), HttpStatus.OK);
     }
 }

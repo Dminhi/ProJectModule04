@@ -9,10 +9,10 @@ import java.util.List;
 
 @Repository
 public interface IWishListRepository extends JpaRepository<WishList,Long> {
-    boolean existsByProductIdAndUserId(Long productId,Long userId);
+    boolean existsByProductProductIdAndUserId(Long productId,Long userId);
 
     @Transactional
-    void deleteWishListByProductIdAndUserId(Long productId,Long userId);
+    void deleteWishListByProductProductIdAndUserId(Long productId,Long userId);
 
     @Transactional
     void deleteWishListById(Long id);

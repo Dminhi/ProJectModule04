@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -54,12 +57,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http.cors(httpSecurityCorsConfigurer ->
+                        httpSecurityCorsConfigurer.
+                                configurationSource(request -> {
+                                    CorsConfiguration corsConfiguration = new CorsConfiguration();
+                                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173/"));
+                                    corsConfiguration.setAllowedMethods(List.of("*"));
+                                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                                    corsConfiguration.setAllowCredentials(true);
+                                    corsConfiguration.setExposedHeaders(List.of("*"));
+                                    return corsConfiguration;
+                                }))
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
 //                        auth.requestMatchers("/admin/**").hasRole("ADMIN"))
                                 auth.requestMatchers(
-                                                "/api.myservice.com/v1/admin/**").hasAuthority("ROLE_ADMIN")
+                                                "/api.myservice.com/v1/admin/**").permitAll()
                                         .requestMatchers("/api.myservice.com/v1/user/**").hasAuthority("ROLE_USER")
                                         .requestMatchers("/api.myservice.com/v1/manager/**").hasAuthority("ROLE_MANAGER")
                                         .requestMatchers("/api.myservice.com/v1/user-manager/**", "/user-client/**").hasAnyAuthority("ROLE_USER", "ROLE_MANAGER")

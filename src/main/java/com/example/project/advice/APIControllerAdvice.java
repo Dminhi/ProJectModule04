@@ -1,6 +1,7 @@
 package com.example.project.advice;
 
 import com.example.project.exception.AccountLockedException;
+import com.example.project.exception.DataNotFound;
 import com.example.project.exception.NotFoundException;
 import com.example.project.exception.RequestErrorException;
 import com.example.project.model.dto.response.ResponseError;
@@ -57,6 +58,14 @@ public class APIControllerAdvice {
     public Map<String,Object> handelRequestErrorException(RequestErrorException e){
         Map<String,Object> map = new HashMap<>();
         map.put("error", new ResponseError(400,"BAD_REQUEST",e.getMessage()));
+        return map;
+    }
+
+    @ExceptionHandler(DataNotFound.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String,Object> handelRequestNotFoundException(DataNotFound e){
+        Map<String,Object> map = new HashMap<>();
+        map.put("error", new ResponseError(404,"NOT FOUND",e.getMessage()));
         return map;
     }
 }

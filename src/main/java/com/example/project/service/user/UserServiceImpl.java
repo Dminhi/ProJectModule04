@@ -1,6 +1,7 @@
 package com.example.project.service.user;
 
 import com.example.project.exception.AccountLockedException;
+import com.example.project.exception.DataNotFound;
 import com.example.project.exception.NotFoundException;
 import com.example.project.exception.RequestErrorException;
 import com.example.project.model.dto.request.account.AccountEditPassword;
@@ -8,6 +9,7 @@ import com.example.project.model.dto.request.account.AccountEditRequest;
 import com.example.project.model.dto.request.auth.FormLogin;
 import com.example.project.model.dto.request.auth.FormRegister;
 import com.example.project.model.dto.response.JWTResponse;
+import com.example.project.model.dto.response.UserResponse;
 import com.example.project.model.entity.Role;
 import com.example.project.model.entity.RoleName;
 import com.example.project.model.entity.User;
@@ -17,6 +19,7 @@ import com.example.project.securiry.jwt.JWTProvider;
 import com.example.project.securiry.principle.UserDetailsCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -102,8 +105,10 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    public Page<User> findAll(Pageable pageable) throws NotFoundException {
+        List<User> users = userRepository.findAllByRoleUser(pageable);
+        long totalUser = (long) userRepository.findAllByRoleUser(pageable).size();
+        return new PageImpl<>(users, pageable, totalUser);
     }
 
     @Override
@@ -118,19 +123,24 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<User> findUserByUsername(String search) {
-        return userRepository.findAllByUsernameContains(search);
+    public List<UserResponse> findUserByUsername(String search) throws DataNotFound {
+        List<User> allByUsernameContains = userRepository.findAllByUsernameContains(search);
+
+        if(allByUsernameContains.isEmpty()){throw new DataNotFound("user is empty");
+
+        }
+        return allByUsernameContains.stream().map(UserServiceImpl::toUserResponse).toList();
     }
 
     @Override
-    public User getUserInfor() throws NotFoundException {
+    public UserResponse getUserInfor() throws NotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsCustom userDetailsCustom = (UserDetailsCustom) authentication.getPrincipal();
-        return userRepository.findById(userDetailsCustom.getId()).orElseThrow(() -> new NotFoundException("user not found"));
+        return toUserResponse(userRepository.findById(userDetailsCustom.getId()).orElseThrow(() -> new NotFoundException("user not found")));
     }
 
     @Override
-    public User updateAccount(AccountEditRequest accountEditRequest) throws NotFoundException, RequestErrorException {
+    public UserResponse updateAccount(AccountEditRequest accountEditRequest) throws NotFoundException, RequestErrorException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsCustom userDetailsCustom = (UserDetailsCustom) authentication.getPrincipal();
         User user = userRepository.findById(userDetailsCustom.getId()).orElseThrow(() -> new NotFoundException("user not found"));
@@ -147,11 +157,11 @@ public class UserServiceImpl implements IUserService {
         user.setUpdatedAt(new Date());
         user.setAvatar(accountEditRequest.getAvatar());
         userRepository.save(user);
-        return user;
+        return toUserResponse(user);
     }
 
     @Override
-    public User changePassword(AccountEditPassword accountEditPassword) throws NotFoundException, RequestErrorException {
+    public UserResponse changePassword(AccountEditPassword accountEditPassword) throws NotFoundException, RequestErrorException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsCustom userDetailsCustom = (UserDetailsCustom) authentication.getPrincipal();
         User user = userRepository.findById(userDetailsCustom.getId()).orElseThrow(() -> new NotFoundException("user not found"));
@@ -161,8 +171,25 @@ public class UserServiceImpl implements IUserService {
         if(!accountEditPassword.getNewPassWord().equals(accountEditPassword.getConfirmPassWord())){
             throw new RequestErrorException("confirm password incorrect");
         }
+        if(accountEditPassword.getOldPassword().equals(accountEditPassword.getNewPassWord())){
+            throw new RequestErrorException("new password must be not same old password");        }
         user.setPassword(passwordEncoder.encode(accountEditPassword.getNewPassWord()));
         userRepository.save(user);
-        return user;
+        return toUserResponse(user);
+    }
+
+    public static UserResponse toUserResponse(User user) {
+        if (user == null) {
+            return null; // Nếu user là null, trả về null để tránh lỗi
+        }
+
+        // Sử dụng Builder của UserResponse để tạo một đối tượng mới
+        return UserResponse.builder()
+                .username(user.getUsername())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .avatar(user.getAvatar())
+                .phone(user.getPhone())
+                .build();
     }
 }

@@ -31,8 +31,8 @@ public class WishListSeviceImpl implements IWishListService{
     public String save(WishListRequest wishListRequest) throws NotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsCustom userDetailsCustom = (UserDetailsCustom) authentication.getPrincipal();
-        if(wishListRepository.existsByProductIdAndUserId(wishListRequest.getProductId(), userDetailsCustom.getId())){
-            wishListRepository.deleteWishListByProductIdAndUserId(wishListRequest.getProductId(), userDetailsCustom.getId());
+        if(wishListRepository.existsByProductProductIdAndUserId(wishListRequest.getProductId(), userDetailsCustom.getId())){
+            wishListRepository.deleteWishListByProductProductIdAndUserId(wishListRequest.getProductId(), userDetailsCustom.getId());
             return "unlike successfully";
         }
         WishList wishList = WishList.builder()

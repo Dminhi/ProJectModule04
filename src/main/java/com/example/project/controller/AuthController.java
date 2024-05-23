@@ -1,9 +1,12 @@
 package com.example.project.controller;
+import com.example.project.config.ConvertPageToPaginationDTO;
 import com.example.project.exception.AccountLockedException;
 import com.example.project.exception.NotFoundException;
 import com.example.project.model.dto.request.auth.FormLogin;
 import com.example.project.model.dto.request.auth.FormRegister;
 import com.example.project.model.dto.response.JWTResponse;
+import com.example.project.model.dto.responsewapper.EHttpStatus;
+import com.example.project.model.dto.responsewapper.ResponseWapper;
 import com.example.project.service.user.IUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,12 @@ public class AuthController {
     @Autowired
     private IUserService userService;
     @PostMapping("/sign-in")
-    public ResponseEntity<JWTResponse> doLogin(@Valid @RequestBody FormLogin formLogin) throws AccountLockedException, NotFoundException {
-        return new ResponseEntity<>(userService.login(formLogin), HttpStatus.OK);
+    public ResponseEntity<?> doLogin(@Valid @RequestBody FormLogin formLogin) throws AccountLockedException, NotFoundException {
+        return new ResponseEntity<>(new ResponseWapper<>(
+                EHttpStatus.SUCCESS,
+                HttpStatus.OK.name(),
+                HttpStatus.OK.value(),
+                userService.login(formLogin)), HttpStatus.OK);
     }
     @PostMapping("/sign-up")
     public ResponseEntity<?> doRegister(@Valid @RequestBody FormRegister formRegister){
